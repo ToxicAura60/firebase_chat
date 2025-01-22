@@ -108,7 +108,7 @@ class SecureMessaging {
     required String roomId,
   }) {
     final privateKey = RsaCipher().retrieveKeyFromFile<RSAPrivateKey>(
-        "${_directory.path}/${roomId}_private");
+        "${_directory.path}/${roomId}_private.pem");
     if (privateKey == null) {
       throw Exception("error");
     }
