@@ -73,5 +73,5 @@ abstract class Message extends Equatable {
     Message? repliedMessage,
   });
 
-  Map<String, Object?> toMap();
+  Map<String, dynamic> toMap();
 }

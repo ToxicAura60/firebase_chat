@@ -9,6 +9,7 @@ class Room extends Equatable {
     this.imageURL,
     this.lastMessage,
     required this.userIds,
+    required this.publicKey,
     this.createdAt,
     this.updatedAt,
   });
@@ -18,6 +19,7 @@ class Room extends Equatable {
   final String? imageURL;
   final List<dynamic> userIds;
   final Message? lastMessage;
+  final String publicKey;
   final int? createdAt;
   final int? updatedAt;
 
@@ -30,6 +32,7 @@ class Room extends Equatable {
           ? null
           : Message.fromMap(map['lastMessage']),
       userIds: map['userIds'],
+      publicKey: map['publicKey'],
       createdAt: map['createdAt'],
       updatedAt: map['updatedAt'],
     );
@@ -40,6 +43,7 @@ class Room extends Equatable {
       id: '',
       name: partialRoom.name,
       userIds: partialRoom.userIds,
+      publicKey: '',
     );
   }
 
@@ -50,6 +54,7 @@ class Room extends Equatable {
     map['imageURL'] = imageURL;
     map['lastMessage'] = lastMessage?.toMap();
     map['userIds'] = userIds;
+    map['publicKey'] = publicKey;
     map['createdAt'] = createdAt;
     map['updatedAt'] = updatedAt;
     return map;
@@ -62,6 +67,7 @@ class Room extends Equatable {
         imageURL,
         lastMessage,
         userIds,
+        publicKey,
         createdAt,
         updatedAt,
       ];

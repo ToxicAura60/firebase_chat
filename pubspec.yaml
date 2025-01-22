@@ -1,14 +1,21 @@
-name: firebase_chat
-description: Chat with firebase
-version: 1.0.0
-# repository: https://github.com/my_org/my_repo
+name: secure_messaging
+description: end to end messaging
+version: 1.0.2
+repository: https://github.com/ToxicAura60/secure_messaging
 
 environment:
   sdk: ^3.6.0
 
 dependencies:
   cloud_firestore: ^3.2.0
+  encrypt: ^5.0.3
   equatable: ^2.0.7
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  path_provider: ^2.1.5
+  pem: ^2.0.5
+  pointycastle: ^3.9.1
+  rsa_cipher: ^1.0.9
 
 dev_dependencies:
   lints: ^5.0.0

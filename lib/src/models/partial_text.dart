@@ -10,7 +10,7 @@ class PartialText extends PartialMessage {
   final String text;
 
   @override
-  Map<String, Object?> toMap() {
+  Map<String, dynamic> toMap() {
     final map = <String, dynamic>{};
     map['authorId'] = authorId;
     map['text'] = text;

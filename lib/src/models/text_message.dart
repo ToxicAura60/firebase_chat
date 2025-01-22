@@ -36,7 +36,7 @@ class TextMessage extends Message {
   }
 
   @override
-  Map<String, Object?> toMap() {
+  Map<String, dynamic> toMap() {
     final map = <String, dynamic>{};
     map['id'] = id;
     map['authorId'] = authorId;

@@ -10,5 +10,5 @@ abstract class PartialMessage extends Equatable {
   final String authorId;
   final MessageType type;
 
-  Map<String, Object?> toMap();
+  Map<String, dynamic> toMap();
 }
