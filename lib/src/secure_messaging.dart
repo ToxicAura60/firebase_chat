@@ -29,10 +29,10 @@ class SecureMessaging {
     map['createdAt'] = firebase_firestore.Timestamp.fromDate(DateTime.now());
     map['updatedAt'] = firebase_firestore.Timestamp.fromDate(DateTime.now());
 
-    final path = await getApplicationDocumentsDirectory();
+    final directory = await getApplicationDocumentsDirectory();
     final keyPair = RsaCipher().generateKeyPair();
     RsaCipher().storeKeyToFile<RSAPrivateKey>(
-      filePath: "$path/private_key.pem",
+      filePath: "${directory.path}/private_key.pem",
       key: keyPair.privateKey,
     );
     map['publicKey'] = RsaCipher().keyToPem(keyPair.privateKey);

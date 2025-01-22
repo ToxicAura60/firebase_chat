@@ -1,12 +1,14 @@
 name: secure_messaging
 description: end to end messaging
-version: 1.0.4
+version: 1.0.5
 repository: https://github.com/ToxicAura60/secure_messaging
 
 environment:
   sdk: ^3.6.0
 
 dependencies:
+  flutter:
+    sdk: flutter
   cloud_firestore: ^5.0.0
   firebase_core: ^3.0.0
   equatable: ^2.0.7
