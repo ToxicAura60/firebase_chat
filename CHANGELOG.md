@@ -1,7 +1,4 @@
-## 1.0.1
+## 1.0.3
 
-- Initial version.
+- - Bug fixes and usability improvements.
 
-## 1.0.2
-
-- Updated dependencies
