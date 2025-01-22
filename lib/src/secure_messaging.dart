@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:path_provider/path_provider.dart';
 import 'package:pointycastle/export.dart';
 import 'package:rsa_cipher/rsa_cipher.dart';
@@ -16,6 +15,7 @@ class SecureMessaging {
   SecureMessaging._internal()
       : _firebaseFirestore = firebase_firestore.FirebaseFirestore.instance;
 
+  // Getter for the SecureMessaging instance.
   static SecureMessaging get instance {
     if (_instance == null) {
       throw Exception('SecureMessaging is not initialized');
@@ -27,25 +27,23 @@ class SecureMessaging {
   late final ChatConfig _chatConfig;
   late final Directory _directory;
 
+  // Initialize SecureMessaging
   static Future<void> initialize({ChatConfig? chatConfig}) async {
     if (_instance != null) {
       throw Exception('SecureMessaging is already initialized');
     }
-
     _instance = SecureMessaging._internal();
     _instance!._directory = await getApplicationDocumentsDirectory();
-
     _instance!._chatConfig = chatConfig ?? ChatConfig();
   }
 
+  // Create a new room with data from PartialRoom and store data in Firestore.
   Future<String> createRoom(PartialRoom partialRoom) async {
     Map<String, dynamic> map = Room.fromPartial(partialRoom).toMap();
     map.remove('id');
     map['createdAt'] = firebase_firestore.Timestamp.fromDate(DateTime.now());
     map['updatedAt'] = firebase_firestore.Timestamp.fromDate(DateTime.now());
-
     final keyPair = RsaCipher().generateKeyPair();
-
     map['publicKey'] = RsaCipher().keyToPem(keyPair.publicKey);
     firebase_firestore.DocumentReference docRef = await _firebaseFirestore
         .collection(_chatConfig.roomCollectionName)
@@ -57,6 +55,7 @@ class SecureMessaging {
     return docRef.id;
   }
 
+  // Get a stream of all rooms, updating data based on Firestore snapshots.
   Stream<List<Room>> rooms(String roomId) {
     return _firebaseFirestore
         .collection(_chatConfig.roomCollectionName)
@@ -72,6 +71,7 @@ class SecureMessaging {
     });
   }
 
+  // Get a stream for a specific room by its ID, updating data based on Firestore snapshots.
   Stream<Room> room(String roomId) {
     return _firebaseFirestore
         .collection(_chatConfig.roomCollectionName)
@@ -83,6 +83,7 @@ class SecureMessaging {
     });
   }
 
+  // Update a room with data from PartialRoom, identified by roomId.
   Future<void> updateRoom({
     required PartialRoom partialRoom,
     required String roomId,
@@ -97,6 +98,7 @@ class SecureMessaging {
         .update(map);
   }
 
+  // Delete a room by its roomId.
   Future<void> deleteRoom(String roomId) async {
     _firebaseFirestore
         .collection(_chatConfig.roomCollectionName)
@@ -104,13 +106,14 @@ class SecureMessaging {
         .delete();
   }
 
+  // Get a stream of messages for a specific room, decrypting the message using the private key.
   Stream<List<Message>> messages({
     required String roomId,
   }) {
     final privateKey = RsaCipher().retrieveKeyFromFile<RSAPrivateKey>(
         "${_directory.path}/${roomId}_private.pem");
     if (privateKey == null) {
-      throw Exception("error");
+      throw Exception("Private key doesn't exist");
     }
     return _firebaseFirestore
         .collection(_chatConfig.roomCollectionName)
@@ -136,6 +139,7 @@ class SecureMessaging {
     });
   }
 
+  // Send a new message to a specific room after encrypting the message with the public key.
   Future<String> sendMessage({
     required PartialMessage partialMessage,
     required String roomId,
@@ -160,6 +164,7 @@ class SecureMessaging {
     return docRef.id;
   }
 
+  // Edit an existing message in a room, encrypting the message with the public key if needed.
   Future<void> editMessage({
     required PartialMessage partialMessage,
     required String roomId,
@@ -186,6 +191,7 @@ class SecureMessaging {
         .update(map);
   }
 
+  // Delete a message from a specific room by messageId.
   Future<void> deleteMessage({
     required String roomId,
     required String messageId,
