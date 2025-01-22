@@ -1,6 +1,6 @@
 name: secure_messaging
 description: end to end messaging
-version: 1.0.6
+version: 1.0.9
 repository: https://github.com/ToxicAura60/secure_messaging
 
 environment:

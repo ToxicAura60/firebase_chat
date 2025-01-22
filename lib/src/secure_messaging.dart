@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:path_provider/path_provider.dart';
 import 'package:pointycastle/export.dart';
 import 'package:rsa_cipher/rsa_cipher.dart';
@@ -9,34 +11,50 @@ import 'config/chat_config.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' as firebase_firestore;
 
 class SecureMessaging {
+  static SecureMessaging? _instance;
+
   SecureMessaging._internal()
-      : _firebaseFirestore = firebase_firestore.FirebaseFirestore.instance,
-        _chatConfig = ChatConfig();
+      : _firebaseFirestore = firebase_firestore.FirebaseFirestore.instance;
 
-  static final SecureMessaging instance = SecureMessaging._internal();
-
-  ChatConfig _chatConfig;
-
-  static void config({required ChatConfig chatConfig}) {
-    instance._chatConfig = chatConfig;
+  static SecureMessaging get instance {
+    if (_instance == null) {
+      throw Exception('SecureMessaging is not initialized');
+    }
+    return _instance!;
   }
 
   final firebase_firestore.FirebaseFirestore _firebaseFirestore;
+  late final ChatConfig _chatConfig;
+  late final Directory _directory;
 
-  Future<void> createRoom(PartialRoom partialRoom) async {
+  static Future<void> initialize({ChatConfig? chatConfig}) async {
+    if (_instance != null) {
+      throw Exception('SecureMessaging is already initialized');
+    }
+
+    _instance = SecureMessaging._internal();
+    _instance!._directory = await getApplicationDocumentsDirectory();
+
+    _instance!._chatConfig = chatConfig ?? ChatConfig();
+  }
+
+  Future<String> createRoom(PartialRoom partialRoom) async {
     Map<String, dynamic> map = Room.fromPartial(partialRoom).toMap();
     map.remove('id');
     map['createdAt'] = firebase_firestore.Timestamp.fromDate(DateTime.now());
     map['updatedAt'] = firebase_firestore.Timestamp.fromDate(DateTime.now());
 
-    final directory = await getApplicationDocumentsDirectory();
     final keyPair = RsaCipher().generateKeyPair();
+
+    map['publicKey'] = RsaCipher().keyToPem(keyPair.publicKey);
+    firebase_firestore.DocumentReference docRef = await _firebaseFirestore
+        .collection(_chatConfig.roomCollectionName)
+        .add(map);
     RsaCipher().storeKeyToFile<RSAPrivateKey>(
-      filePath: "${directory.path}/private_key.pem",
+      filePath: "${_directory.path}/${docRef.id}_private.pem",
       key: keyPair.privateKey,
     );
-    map['publicKey'] = RsaCipher().keyToPem(keyPair.publicKey);
-    _firebaseFirestore.collection(_chatConfig.roomCollectionName).add(map);
+    return docRef.id;
   }
 
   Stream<List<Room>> rooms(String roomId) {
@@ -88,10 +106,9 @@ class SecureMessaging {
 
   Stream<List<Message>> messages({
     required String roomId,
-    required String privateKeyPath,
   }) {
-    final privateKey =
-        RsaCipher().retrieveKeyFromFile<RSAPrivateKey>(privateKeyPath);
+    final privateKey = RsaCipher().retrieveKeyFromFile<RSAPrivateKey>(
+        "${_directory.path}/${roomId}_private");
     if (privateKey == null) {
       throw Exception("error");
     }
