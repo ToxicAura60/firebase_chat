@@ -51,7 +51,7 @@ class SecureMessaging {
     return docRef.id;
   }
 
-  Stream<List<Room>> rooms(String roomId) {
+  Stream<List<Room>> rooms() {
     return _firebaseFirestore
         .collection(_chatConfig.roomCollectionName)
         .snapshots()
