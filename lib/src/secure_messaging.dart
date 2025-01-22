@@ -35,7 +35,7 @@ class SecureMessaging {
       filePath: "${directory.path}/private_key.pem",
       key: keyPair.privateKey,
     );
-    map['publicKey'] = RsaCipher().keyToPem(keyPair.privateKey);
+    map['publicKey'] = RsaCipher().keyToPem(keyPair.publicKey);
     _firebaseFirestore.collection(_chatConfig.roomCollectionName).add(map);
   }
 
