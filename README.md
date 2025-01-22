@@ -1,35 +1,37 @@
 ## Usage
 
 ```dart
-import 'package:firebase_chat/firebase_chat.dart';
+import 'package:secure_messaging/secure_messaging.dart';
 
 void main() async {
   // create room
-  await Chat.instance
+  await SecureMessaging.instance
       .createRoom(PartialRoom(name: 'user', userIds: ['user_01', 'user_02']));
 
   // update room
-  await Chat.instance.updateRoom(
+  await SecureMessaging.instance.updateRoom(
       partialRoom: PartialRoom(name: 'user', userIds: ['user_01', 'user_02']),
       roomId: 'room_01');
 
   // delete room
-  await Chat.instance.deleteRoom('room_01');
+  await SecureMessaging.instance.deleteRoom('room_01');
 
   // send message
-  await Chat.instance.sendMessage(
+  await SecureMessaging.instance.sendMessage(
+    publicKey: "-----BEGIN...",
     partialMessage: PartialText(authorId: 'user_01', text: 'Hello World!'),
     roomId: 'room_01',
   );
 
   // edit message
-  await Chat.instance.editMessage(
+  await SecureMessaging.instance.editMessage(
+      publicKey: "-----BEGIN...",
       partialMessage: PartialText(authorId: 'user_01', text: 'Hello World!'),
       roomId: 'room_01',
       messageId: 'message_01');
 
   // delete message
-  await Chat.instance.deleteMessage(roomId: 'room_01', messageId: 'message_01');
+  await SecureMessaging.instance
+      .deleteMessage(roomId: 'room_01', messageId: 'message_01');
 }
-
 ```

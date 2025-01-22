@@ -1,4 +1,4 @@
-## 1.0.3
+## 1.0.4
 
-- - Bug fixes and usability improvements.
+- Removed unused dependencies
 
