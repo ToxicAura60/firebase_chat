@@ -6,7 +6,7 @@ import 'models/room.dart';
 import 'models/message.dart';
 import 'models/partial_message.dart';
 import 'models/partial_room.dart';
-import 'config/chat_config.dart';
+import 'chat_config.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' as firebase_firestore;
 
 class SecureMessaging {
@@ -71,9 +71,12 @@ class SecureMessaging {
         .collection(_chatConfig.roomCollectionName)
         .doc(roomId)
         .snapshots()
-        .map((snapshot) {
-      var data = snapshot.data()!;
-      return Room.fromMap(data);
+        .map((doc) {
+      var map = doc.data()!;
+      map['id'] = doc.id;
+      map['createdAt'] = map['createdAt'].millisecondsSinceEpoch;
+      map['updatedAt'] = map['updatedAt'].millisecondsSinceEpoch;
+      return Room.fromMap(map);
     });
   }
 
@@ -134,6 +137,7 @@ class SecureMessaging {
     required PartialMessage partialMessage,
     required String roomId,
     required String publicKey,
+    void Function(String docId)? onSuccess,
   }) async {
     final map = Message.fromPartial(partialMessage).toMap();
     map.remove('id');
@@ -151,6 +155,10 @@ class SecureMessaging {
         .doc(roomId)
         .collection(_chatConfig.messageCollectionName)
         .add(map);
+
+    if (onSuccess != null) {
+      onSuccess(docRef.id);
+    }
     return docRef.id;
   }
 

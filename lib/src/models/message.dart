@@ -15,16 +15,6 @@ enum MessageStatus {
   seen,
 }
 
-extension MessageTypeX on MessageType {
-  bool get isText => this == MessageType.text;
-}
-
-extension MessageStatusX on MessageStatus {
-  bool get isDelivered => this == MessageStatus.delivered;
-  bool get isError => this == MessageStatus.error;
-  bool get isSeen => this == MessageStatus.seen;
-}
-
 abstract class Message extends Equatable {
   const Message({
     required this.id,
