@@ -1,6 +1,6 @@
 name: secure_messaging
 description: End-to-end encrypted messaging with RSA for secure and private communication between users.
-version: 1.1.5
+version: 1.1.6
 repository: https://github.com/ToxicAura60/secure_messaging
 
 environment:
